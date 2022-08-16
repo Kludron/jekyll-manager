@@ -4,14 +4,21 @@ import sys
 import os
 import platform
 import yaml
+
+import colorama
+from colorama import Fore, Style
+
 from datetime import datetime
 
 from pprint import pprint
 
 JEKYLL_ROOT = os.getcwd()
 
+colorama.init(autoreset=True)
+
 # TODO: Change this to first read user input, then check _config.yml, then _config.toml
 # Documentation: https://jekyllrb.com/docs/configuration/
+
 try:
     JEKYLL_CONFIG_NAME = sys.argv[1]
 except IndexError:
@@ -47,7 +54,6 @@ class Manager:
 
     def __call__(self):
         self.start()
-        
 
     def start(self):
         while True:
@@ -70,12 +76,12 @@ class Manager:
             optSize  = max([len(key) for key in menu.keys()]) + 2
             descSize = max([len(item.get("Description")) for item in menu.values()]) + 2
             line = '-' * (4 + optSize + 5 + descSize + 2)
-            header = f'    {"Option":<{optSize}} {"|":<3} {"Description":<{descSize}}'
+            header = f'{"":<4}{Style.BRIGHT}{"Option":<{optSize}}{Style.RESET_ALL}{" |":<5}{Style.BRIGHT}{"Description":<{descSize}}'
 
             print(header)
             print(line)
             for key in menu.keys():
-                print(f'| + {key:<{optSize}} {":":<3} {menu.get(key)["Description"]:<{descSize}} |')
+                print(f'| + {Style.BRIGHT + Fore.RED}{key:<{optSize}}{Style.RESET_ALL}{" :":<5}{menu.get(key)["Description"]:<{descSize}} |')
             print(line)
 
         menu = {
@@ -192,8 +198,7 @@ class Manager:
             os.system(post)
 
     def __editPost(self):
-        for i, file in enumerate(self.posts):
-            print(f'{i} | {self.__grabInfo(file)["Title"]}')
+        self.__displayPosts()
 
         print('\nWhich post would you like to edit?')
         postnum = input('je> ')
@@ -206,10 +211,12 @@ class Manager:
 
         self.__openInEditor(post)
 
+    def __displayPosts(self):
+        for i, file in enumerate(self.posts):
+            print(f'{Fore.RED}{i:<3}{Style.RESET_ALL}{self.__grabInfo(file)["Title"]}')
 
     def __viewPost(self):
-        for i, file in enumerate(self.posts):
-            print(f'{i} | {self.__grabInfo(file)["Title"]}')
+        self.__displayPosts()
         
         print('\nWhich post would you like to view?')
         postnum = input('jv> ')
@@ -276,19 +283,27 @@ class Manager:
                 'Tags'       : info['Tags']
             }
 
-        pprint(postviews, sort_dicts=False)
+        for i, name in enumerate(postviews.keys()):
+            print(f'{Fore.RED}{i:<4}{Style.RESET_ALL + Style.BRIGHT}{name}')
+            for dname, value in postviews[name].items():
+                print(f'{"":<6}{Style.BRIGHT + Fore.GREEN}{dname:<15}', end="")
+                if isinstance(value, list):
+                    print(f'{", ".join(value):<15}')
+                elif value is None:
+                    print(f'{"None":<15}')
+                else:
+                    print(f'{value:<15}')
                 
     def __deletePost(self):
+        self.__displayPosts()
+
         prompt = 'jd> '
-        for i, file in enumerate(self.posts):
-            print(f'{i} | {self.__grabInfo(file)["Title"]}')
-        
         print('\nWhich post would you like to delete?')
         postnum = input(prompt)
         
         try:
             post_title = self.__grabInfo(self.posts[int(postnum)])['Title']
-            print(f'Please confirm by typing {post_title.upper()} in uppercase.')
+            print(f"Please confirm by typing '{post_title.upper()}' in uppercase.")
         except Exception as e:
             print(e)
             print("That post doesn't exist!")
