@@ -1,0 +1,7 @@
+Metadata-Version: 2.1
+Name: jekyll-manager
+Version: 0.0.1
+Summary: A command line interface for managing your Jekyll Blog
+Home-page: https://github.com/kludron/jekyll-manager
+Author: Kludron
+Author-email: kludron@lukewarmsecurityinfo.com

@@ -9,6 +9,21 @@ but plans to cover more. Your suggestions are always welcome!
 
 ## QuickStart
 
+Jekyll-Manager is available for download via pip (page [here](https://pypi.org/project/jekyll-manager/)).
+
+To download, you simply need to run:
+```
+pip install jekyll-manager
+```
+
+### How to run (with pip install)
+
+To run jekyll-manager, first navigate to the root directory of your jekyll blog, then type `jekyll-manager` to run.
+
+It's that simple!
+
+## Build it yourself
+
 With the current build being in Python3, this needs to be installed.
 
 Installation guide for Python3 can be found [here](https://www.python.org/downloads/). *https://www.python.org/downloads/*

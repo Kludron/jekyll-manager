@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+setup.py
+bin/jekyll-manager
+jekyll_manager/__init__.py
+jekyll_manager.egg-info/PKG-INFO
+jekyll_manager.egg-info/SOURCES.txt
+jekyll_manager.egg-info/dependency_links.txt
+jekyll_manager.egg-info/requires.txt
+jekyll_manager.egg-info/top_level.txt

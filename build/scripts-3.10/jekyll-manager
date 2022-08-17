@@ -1,0 +1,6 @@
+#!python
+
+from jekyll_manager import Manager
+
+manager = Manager()
+manager()
