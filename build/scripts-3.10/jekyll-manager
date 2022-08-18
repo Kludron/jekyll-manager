@@ -1,6 +1,6 @@
 #!python
 
-from jekyll_manager import Manager
+import jekyll_manager
 
-manager = Manager()
+manager = jekyll_manager.Manager()
 manager()

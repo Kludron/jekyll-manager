@@ -3,49 +3,38 @@ import sys
 import os
 import platform
 import yaml
-
 import colorama
-from colorama import Fore, Style
 
+from colorama import Fore, Style
 from datetime import datetime
 
-from pprint import pprint
+usage = "jekyll-manager [path/to/jekyll/blog]"
 
-JEKYLL_ROOT = os.getcwd()
-
-colorama.init(autoreset=True)
-
-# TODO: Change this to first read user input, then check _config.yml, then _config.toml
-# Documentation: https://jekyllrb.com/docs/configuration/
-
-try:
-    JEKYLL_CONFIG_NAME = sys.argv[1]
-except IndexError:
-    JEKYLL_CONFIG_NAME = '_config.yml'
-
-JEKYLL_CONFIG = os.path.join(JEKYLL_ROOT, JEKYLL_CONFIG_NAME)
-
-if not os.path.isfile(JEKYLL_CONFIG_NAME):
-    sys.stderr.write('Usage: {} [config-filename(if different)]\n'.format(sys.argv[0]))
-    exit()
-
-if os.path.dirname(JEKYLL_CONFIG) != os.path.dirname(JEKYLL_ROOT):
-    # Change into the jekyll directory
-    # NOTE: This always assumes that the config file is at the root of the jekyll directory
-    # As per the documentation, this is not always the case: https://jekyllrb.com/docs/configuration/
-    JEKYLL_ROOT = os.path.dirname(JEKYLL_CONFIG)
+if len(sys.argv) > 1:
+    # Checks that the directory they provided is real
+    if os.path.isdir(os.path.abspath(sys.argv[1])):
+        JEKYLL_ROOT = os.path.abspath(sys.argv[1])
+    else:
+        sys.stderr.write("Directory not found.\n")
+        sys.exit()
+else:
+    JEKYLL_ROOT = os.getcwd()
 
 # This should always be correct, as per the documentation: https://jekyllrb.com/docs/posts/
 JEKYLL_POSTS = os.path.join(JEKYLL_ROOT, '_posts')
 
+if not os.path.isdir(JEKYLL_POSTS):
+    sys.stderr.write("Please ensure a _posts directory is present.\n")
+    print("Usage: " + usage)
+    sys.exit()
+
 # This seems to be a globally identified YAML header delimiter
 YAML_DELIMITER = '---'
 
+colorama.init(autoreset=True)
+
 class Manager:
     def __init__(self):
-        with open(JEKYLL_CONFIG, 'r') as config_file:
-            self.config = yaml.load(config_file, Loader=yaml.FullLoader)
-        
         self.posts = list()
         for root,dir,posts in os.walk(JEKYLL_POSTS):
             for post in posts:
@@ -118,7 +107,7 @@ class Manager:
             print('option unknown. type \'menu\' for a list of options')
         else:
             print()
-            menu.get(selection.lower()).get('Function')()
+            menu.get(selection.lower().strip()).get('Function')()
         
     def __exit(self):
         sys.exit()
@@ -339,7 +328,3 @@ class Manager:
                     continue
                 data += line
             return yaml.load(data, Loader=yaml.FullLoader)
-
-if __name__ == '__main__':
-    m = Manager()
-    m()

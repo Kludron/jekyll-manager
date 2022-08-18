@@ -1,37 +1,15 @@
 
-import sys
+# NOTE: This is not being used...
+
 import os
-import platform
 import yaml
-import colorama
-
-from colorama import Fore, Style
+from colorama import init, Fore, Style
 from datetime import datetime
-
-usage = "jekyll-manager [path/to/jekyll/blog]"
-
-if len(sys.argv) > 1:
-    # Checks that the directory they provided is real
-    if os.path.isdir(os.path.abspath(sys.argv[1])):
-        JEKYLL_ROOT = os.path.abspath(sys.argv[1])
-    else:
-        sys.stderr.write("Directory not found.\n")
-        sys.exit()
-else:
-    JEKYLL_ROOT = os.getcwd()
-
-# This should always be correct, as per the documentation: https://jekyllrb.com/docs/posts/
-JEKYLL_POSTS= os.path.join(JEKYLL_ROOT, '_posts')
-
-if not os.path.isdir(JEKYLL_POSTS):
-    sys.stderr.write("Please ensure a _posts directory is present.\n")
-    print("Usage: " + usage)
-    sys.exit()
 
 # This seems to be a globally identified YAML header delimiter
 YAML_DELIMITER = '---'
 
-colorama.init(autoreset=True)
+init(autoreset=True)
 
 class Manager:
     def __init__(self):
@@ -67,7 +45,7 @@ class Manager:
             header = f'{"":<4}{Style.BRIGHT}{"Option":<{optSize}}{Style.RESET_ALL}{" |":<5}{Style.BRIGHT}{"Description":<{descSize}}'
 
             print(header)
-        print(line)
+            print(line)
             for key in menu.keys():
                 print(f'| + {Style.BRIGHT + Fore.RED}{key:<{optSize}}{Style.RESET_ALL}{" :":<5}{menu.get(key)["Description"]:<{descSize}} |')
             print(line)
@@ -107,7 +85,7 @@ class Manager:
             print('option unknown. type \'menu\' for a list of options')
         else:
             print()
-            menu.get(selection.lower().strip()).get('Function')()
+            menu.get(selection.lower()).get('Function')()
         
     def __exit(self):
         sys.exit()
