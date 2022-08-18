@@ -1,1 +1,4 @@
 venv
+build
+dist
+jekyll_manager.egg-info
