@@ -1,8 +1,9 @@
 
 import os
 import logging as log
+import platform
 
-import utils
+import jekyll_manager.utils as utils
 
 # Remove in production
 from pprint import pprint
@@ -26,30 +27,60 @@ class Post():
         self.date = info.get('date')
         self.metadata = info.get('metadata')
 
-    def edit(self):
+    def edit(self) -> None:
         """
         description:
             This function allows the post to be opened in the system editor.
         """
-        pass
+        # Assumes Linux & MacOS have EDITOR env variable set
+        if platform.system() == 'Darwin' or platform.system() == 'Linux':
+            os.system('%s %s' % (os.getenv('EDITOR'), self.path))
+        elif platform.system() == 'Windows':
+            os.system(post)
+        else:
+            print("This operating system is not yet supported.")
 
-    def view(self):
-        pass
+    def view(self) -> None:
+        """
+        description:
+            To seperate this from the normal 'edit' function, the post
+            is opened in read-only mode. 
+
+            To achieve this, the file is duplicated as a read-only document 
+            in the users temporary directory, and opened from there.
+        """
+        # Linux only - limited view-only support
+        viewonly = {
+            "nvim"  : '-R',
+            "vi"    : '-R',
+            "vim"   : '-R',
+            "nano"  : '-v',
+        }
+        # Assumes Linux & MacOS have EDITOR env variable set
+        if platform.system() == 'Darwin' or platform.system() == 'Linux':
+            # Open in view-only mode (if known)
+            # Otherwise open like normal
+            editor = os.getenv('EDITOR')
+            os.system('%s %s %s' % (editor, self.path, viewonly.get(editor)))
+        elif platform.system() == 'Windows':
+            os.system(post)
+        else:
+            print("This operating system is not yet supported.")
 
     def display(self) -> None:
-        from colorama import Fore, Style
-        from utils import makeRed, makeBright
         # Generate output
-        # output  = utils.makeRed(str(self.index)).ljust(4)
-        # output = f'{Fore.RED}{self.index}{Style.RESET_ALL}'.ljust(4)
-        output  = f'{makeBright(self.index)}'
-        output += ' ' * (4-len(output))
+        output  = utils.makeRed(self.index)
+        output  = output.ljust(len(output)+3)
         output += self.title
-        # output += "sample"
         # Print output
         print(output)
-        # import sys
-        # sys.stdout.write('{}\n'.format(output))
+
+    def delete(self) -> bool:
+        try:
+            os.remove(self.getPath())
+            return True
+        except Exception:
+            return False
 
     def getTitle(self) -> str:
         return self.title
@@ -74,8 +105,11 @@ class Post():
         #   - Only want to change the title, absolutely NOTHING else
         pass
 
-    def setIndex(sel, number) -> bool:
+    def setIndex(self, number) -> bool:
         self.index = number
+
+    def setDate(self, date) -> bool:
+        pass
 
 # For testing
 if __name__ == '__main__':

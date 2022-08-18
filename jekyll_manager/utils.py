@@ -73,4 +73,10 @@ def makeBright(text: str) -> str:
     return f'{Style.BRIGHT}{text}{Style.RESET_ALL}'
 
 def makeRed(text: str) -> str:
-    return f'{Fore.RED}{text}'
+    return f'{Fore.RED}{text}{Style.RESET_ALL}'
+
+def makePurple(text: str) -> str:
+    return f'{Fore.PURPLE}{text}{Style.RESET_ALL}'
+
+def makeBlue(text: str) -> str:
+    return f'{Fore.BLUE}{text}{Style.RESET_ALL}'

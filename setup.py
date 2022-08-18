@@ -18,5 +18,5 @@ setup(
         'colorama',
         'pyyaml',
     ],
-    scripts=['bin/jekyll-manager'],
+    scripts=['jekyll-manager'],
 )
