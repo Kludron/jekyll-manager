@@ -230,14 +230,6 @@ class Manager:
                 else:
                     return
 
-        # Grab categories
-        # TODO
-        categories = []
-
-        # Grab tags
-        # TODO
-        tags = []
-
         file_extension = '.md'
         filename_delim = '-'
 

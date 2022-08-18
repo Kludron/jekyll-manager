@@ -4,6 +4,10 @@ import logging as log
 import platform
 
 import jekyll_manager.utils as utils
+from jekyll_manager.utils import (
+    grabinfo,
+    makeRed,
+)
 
 # Remove in production
 from pprint import pprint
@@ -29,7 +33,7 @@ class Post():
 
     def edit(self) -> None:
         """
-        description:
+        :description:
             This function allows the post to be opened in the system editor.
         """
         # Assumes Linux & MacOS have EDITOR env variable set
@@ -42,7 +46,7 @@ class Post():
 
     def view(self) -> None:
         """
-        description:
+        :description:
             To seperate this from the normal 'edit' function, the post
             is opened in read-only mode. 
 
@@ -68,6 +72,10 @@ class Post():
             print("This operating system is not yet supported.")
 
     def display(self) -> None:
+        """
+        :description:
+            Prints out the index and title of a post
+        """
         # Generate output
         output  = utils.makeRed(self.index)
         output  = output.ljust(len(output)+3)
@@ -76,10 +84,14 @@ class Post():
         print(output)
 
     def delete(self) -> bool:
+        """
+        :description:
+            Removes a post and returns True on success, otherwise False
+        """
         try:
             os.remove(self.getPath())
             return True
-        except Exception:
+        except (FileNotFoundError, TypeError):
             return False
 
     def getTitle(self) -> str:
@@ -106,10 +118,31 @@ class Post():
         pass
 
     def setIndex(self, number) -> bool:
-        self.index = number
+        """
+        :params:
+            number: int = posts index value
+        :description:
+            Sets the post index value to the given number.
+        """
+        if isinstance(number, int):
+            self.index = number
+            return True
+        return False
 
     def setDate(self, date) -> bool:
         pass
+
+    def setPath(self, path) -> bool:
+        """
+        :params:
+            path : str = path that already exists.
+        """
+        if os.path.exists(path):
+            self.path = path
+            return True
+        return False
+
+            
 
 # For testing
 if __name__ == '__main__':
