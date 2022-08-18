@@ -31,7 +31,7 @@ class Manager:
             # This should always be correct, as per the documentation: https://jekyllrb.com/docs/posts/
             self.posts_path = os.path.join(self.root, '_posts')
         except TypeError:
-            raise JekyllRootException('Root directory invalid')
+            raise JekyllRootException(f"Root directory: '{root}' is invalid")
 
         if not os.path.isdir(self.posts_path):
             raise JekyllRootException('_posts directory not found')
@@ -48,31 +48,35 @@ class Manager:
         self.functions = {
             "list"   :  {
                 "Description" : "List all posts",
-                "Function" : self.listPosts,
+                "Function"    : self.listPosts,
             },
             "view"   :  {
                 "Description" : "View a posts",
-                "Function" : self.viewPosts,
+                "Function"    : self.viewPosts,
             },
             "edit"   :  {
                 "Description" : "Edit a post",
-                "Function" : self.editPosts,
+                "Function"    : self.editPosts,
             },
             "create"   :  {
                 "Description" : "Create a post",
-                "Function" : self.createPosts,
+                "Function"    : self.createPosts,
             },
             "delete"   :  {
                 "Description" : "Delete a posts",
-                "Function" : self.deletePosts,
+                "Function"    : self.deletePosts,
             },
             "menu"   :  {
                 "Description" : "Display this menu",
-                "Function" : self.printMenu
+                "Function"    : self.printMenu
             },
-            "exit"  :   {
+            "help"   :  {
+                "Description" : "Display this menu",
+                "Function"    : self.printMenu
+            },
+            "quit"  :   {
                 "Description" : "Exit the program",
-                "Function" : sys.exit
+                "Function"    : sys.exit
             },
         }
 
@@ -140,6 +144,15 @@ class Manager:
     def parseSelection(self, selection) -> None:
         if selection in self.functions.keys():
             self.functions.get(selection).get('Function')()
+        else:
+            # Allow for shorthand calls. 
+            # NOTE: This needs to be reviewed whenever a new funtion is added
+            for key in self.functions.keys():
+                if key.startswith(selection):
+                    function = self.functions.get(key)
+                    function.get('Function')()
+                    return
+            print("Invalid option. Type 'menu' for a list of options")
 
     ### Post functions ###
 
