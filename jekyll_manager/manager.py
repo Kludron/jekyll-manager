@@ -10,7 +10,7 @@ from colorama import (
 )
 from datetime import datetime
 
-from jekyll_manager import JekyllRootException
+from jekyll_manager.exceptions import JekyllRootException
 from jekyll_manager.post import Post
 from jekyll_manager.utils import (
     makeBright,
@@ -28,6 +28,7 @@ class Manager:
         self.posts = list()
 
         try:
+            # This should always be correct, as per the documentation: https://jekyllrb.com/docs/posts/
             self.posts_path = os.path.join(self.root, '_posts')
         except TypeError:
             raise JekyllRootException('Root directory invalid')
