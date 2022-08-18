@@ -1,9 +1,11 @@
 README.md
+jekyll-manager
 pyproject.toml
 setup.py
-bin/jekyll-manager
-jekyll_manager/__init__.py
+jekyll_manager/exceptions.py
 jekyll_manager/manager.py
+jekyll_manager/post.py
+jekyll_manager/utils.py
 jekyll_manager.egg-info/PKG-INFO
 jekyll_manager.egg-info/SOURCES.txt
 jekyll_manager.egg-info/dependency_links.txt

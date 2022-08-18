@@ -13,7 +13,7 @@ setup(
     documentation='https://gitbu.com/kludron/jekyll-manager',
     url='https://github.com/kludron/jekyll-manager',
     packages=['jekyll_manager'],
-    version='0.0.2',
+    version='0.1.0',
     install_requires=[
         'colorama',
         'pyyaml',
