@@ -1,4 +1,11 @@
+#!/usr/bin/env python
+
 from setuptools import setup
+
+import os
+
+README = open('README.md', 'r').read()
+DEPENDENCIES = open(os.path.join(os.getenv('HOME'), 'Documents/Projects/jekyll-manager', 'requirements.txt'), 'r').read()
 
 long_description = """
 A command line interface for your Jekyll Blog.
@@ -15,20 +22,14 @@ For more information, visit my github repo: https://github.com/kludron/jekyll-ma
 setup(
     name='jekyll-manager',
     description="A command line interface for managing your Jekyll Blog",
-    long_description ="""
-    A command line interface for your Jekyll Blog. 
-    Find out more information on my github repo: https://github.com/kludron/jekyll-manager.
-    """,
+    long_description=README,
+    long_description_content_type="text/markdown",
     author="Kludron",
     author_email="kludron@lukewarmsecurityinfo.com",
-    readme="README.md",
-    documentation='https://gitbu.com/kludron/jekyll-manager',
-    url='https://github.com/kludron/jekyll-manager',
+    documentation="https://gitbu.com/kludron/jekyll-manager",
+    url="https://github.com/kludron/jekyll-manager",
     packages=['jekyll_manager'],
     version='1.0.2',
-    install_requires=[
-        'colorama',
-        'pyyaml',
-    ],
-    scripts=['./jekyll-manager'],
+    install_requires=DEPENDENCIES,
+    entry_points={'console_scripts': ['jekyll-manager=jekyll_manager.__main__:main']}
 )
