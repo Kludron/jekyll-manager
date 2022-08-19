@@ -3,3 +3,4 @@ build
 dist
 jekyll_manager.egg-info
 jekyll_manager/__pycache__
+output
