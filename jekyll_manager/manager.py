@@ -31,6 +31,7 @@ class Manager:
             # This should always be correct, as per the documentation: https://jekyllrb.com/docs/posts/
             self.posts_path = os.path.join(self.root, '_posts')
         except TypeError:
+            if not root: raise JekyllRootException("Root directory not specified")
             raise JekyllRootException(f"Root directory: '{root}' is invalid")
 
         if not os.path.isdir(self.posts_path):
