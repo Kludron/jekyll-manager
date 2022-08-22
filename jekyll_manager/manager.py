@@ -50,34 +50,47 @@ class Manager:
             "list"   :  {
                 "Description" : "List all posts",
                 "Function"    : self.listPosts,
+                "args"        : False,
+            },
+            "info"   :  {
+                "Description" : "Display post information",
+                "Function"    : self.infoPosts,
+                "args"        : True,
             },
             "view"   :  {
                 "Description" : "View a posts",
                 "Function"    : self.viewPosts,
+                "args"        : True,
             },
             "edit"   :  {
                 "Description" : "Edit a post",
                 "Function"    : self.editPosts,
+                "args"        : True,
             },
             "create"   :  {
                 "Description" : "Create a post",
                 "Function"    : self.createPosts,
+                "args"        : False,
             },
             "delete"   :  {
                 "Description" : "Delete a posts",
                 "Function"    : self.deletePosts,
+                "args"        : True,
             },
             "menu"   :  {
                 "Description" : "Display this menu",
-                "Function"    : self.printMenu
+                "Function"    : self.printMenu,
+                "args"        : False,
             },
             "help"   :  {
                 "Description" : "Display this menu",
-                "Function"    : self.printMenu
+                "Function"    : self.printMenu,
+                "args"        : False,
             },
             "quit"  :   {
                 "Description" : "Exit the program",
-                "Function"    : sys.exit
+                "Function"    : sys.exit,
+                "args"        : False,
             },
         }
 
@@ -110,6 +123,9 @@ class Manager:
         optSize  = padding + max([len(makeBright(makeRed(key))) for key in self.functions.keys()])
         # Get maximum description size
         descSize = padding + max([len(item.get("Description")) for item in self.functions.values()])
+        print(descSize)
+        print(optSize)
+        print(len(makeBlue(makeBright("Description"))))
         # Set some variables
         listprefix  = '| + '
         listpostfix = ' |'
@@ -124,7 +140,7 @@ class Manager:
         header += f'{makeBright(makeBlue("Description")):<{descSize}}'
 
         # NOTE: Not sure why a constant 5 is needed here, but it's needed.
-        seperator = '-' * (len(header) - optSize + (optSize-descSize) - 5)
+        seperator = '-' * (len(header) - len(makeBright(makeBlue(''))))
 
         # Print header of table
         print(header)
@@ -143,56 +159,134 @@ class Manager:
         print(seperator)
 
     def parseSelection(self, selection) -> None:
-        if selection in self.functions.keys():
-            self.functions.get(selection).get('Function')()
+        """
+        :params:
+            selection: str = the input from the user
+        :description:
+            This should be able to satisfy the following:
+                - Shorthand calls (i.e., just typing in e for edit, or q for quit)
+                - Handling multiple arguments (i.e., e 3, or edit 4)
+        """
+        # Split the users input, space delimited
+        selection = selection.strip().split(' ')
+        # Seperate the command
+        command = selection[0]
+
+        # Ensure command is non-empty
+        if len(command) < 1:
+            return 
+
+        # Seperate out the arguments
+        if len(selection) > 1:
+            arguments = selection[1:]
         else:
-            # Allow for shorthand calls. 
-            # NOTE: This needs to be reviewed whenever a new funtion is added
-            for key in self.functions.keys():
-                if key.startswith(selection):
-                    function = self.functions.get(key)
-                    function.get('Function')()
-                    return
-            print("Invalid option. Type 'menu' for a list of options")
+            arguments = None
+
+        # Check if command matches / is a substring of any of the menu options
+        #   If it's a substring of more than one menu function, then fail. 
+
+        possibilities = []
+
+        for fkey in self.functions:
+            if fkey.find(command) == 0:
+                possibilities.append(fkey)
+                
+        if len(possibilities) != 1:
+            print("Invalid option. Type 'menu' for a list of options.")
+            return
+
+        menu_item = self.functions.get(possibilities[0])
+
+        # Grab the function 
+        func = menu_item.get("Function")
+
+        # Grab args
+        func_args = menu_item.get("args")
+
+        # Pass arguments through if there are any
+        if func_args:
+            func(arguments)
+        else:
+            func()
+        return
 
     ### Post functions ###
+
+    def getPost(self, postnum) -> Post:
+        try: postnum = int(postnum)
+        except ValueError: return None
+
+        if postnum < COUNTER_START or postnum >= (len(self.posts)+COUNTER_START):
+            return None
+
+        try: return self.posts[postnum-COUNTER_START]
+        except IndexError: return None
 
     def listPosts(self) -> None:
         for post in self.posts:
             post.display()
 
-    def editPosts(self) -> None:
-        # Print all posts available to edit
-        self.listPosts()
-        # Prompt for post number to edit
-        prompt = 'Post number to edit: '
-        postnum = input(prompt)
-        try:
-            # Edit the post with the corresponding post number
-            self.posts[int(postnum)-COUNTER_START].edit()
-        except (IndexError, ValueError):
-            print('Invalid post number.')
+    def infoPosts(self, args:list) -> None:
+        # Check if user put in post number in command-line argument
+        if not args:
+            # Prompt for post number to edit
+            prompt = 'Post number to view info: '
+            postnum = input(prompt)
+        else:
+            # Else, grab the postnum from arguments supplied
+            postnum = args[0]
 
-    def viewPosts(self) -> None:
-        # Print all posts available to view
-        self.listPosts()
-        # Prompt for post number to view
-        prompt = 'Post number to view: '
-        postnum = input(prompt)
-        try:
-            # View the post with the corresponding post number
-            self.posts[int(postnum)-COUNTER_START].view()
-        except (IndexError, ValueError):
-            print('Invalid post number.')
+        post = self.getPost(postnum)
+        if post:
+            post.printInfo()
+        else:
+            print('Invalid post number')
+
+    def editPosts(self, args:list) -> None:
+        # Check if user put in post number in command-line argument
+        if not args:
+            # Prompt for post number to edit
+            prompt = 'Post number to edit: '
+            postnum = input(prompt)
+        else:
+            # Else, grab the postnum from arguments supplied
+            postnum = args[0]
+
+        post = self.getPost(postnum)
+        if post:
+            post.edit()
+        else:
+            print('Invalid post number')
+
+    def viewPosts(self, args:list) -> None:
+        # Check if user put in post number in command-line argument
+        if not args:
+            # Prompt for post number to edit
+            prompt = 'Post number to edit: '
+            postnum = input(prompt)
+        else:
+            # Else, grab the postnum from arguments supplied
+            postnum = args[0]
+
+        post = self.getPost(postnum)
+        if post:
+            post.view()
+        else:
+            print('Invalid post number')
     
-    def deletePosts(self) -> None:
-        # Print all posts available to view
-        self.listPosts()
-        # Prompt for post number to view
-        prompt = 'Post to delete: '
-        postnum = input(prompt)
+    def deletePosts(self, args:list) -> None:
+        # Check if user put in post number in command-line argument
+        if not args:
+            # Prompt for post number to edit
+            prompt = 'Post number to edit: '
+            postnum = input(prompt)
+        else:
+            # Else, grab the postnum from arguments supplied
+            postnum = args[0]
         try:
-            post = self.posts[int(postnum)-COUNTER_START]
+            post = self.getPost(postnum)
+            if not post:
+                pass
             title = post.getTitle()
             print(f"To verify, please type '{title.upper()}'")
             confirmation = input('confirmation: ')
@@ -234,7 +328,7 @@ class Manager:
                 # Grab the date for the post
                 print('Date format: YYYY MM DD')
                 date = input('Post date: ')
-                date = datetime.strptime(date, '%Y %m %d').strftime(f'%Y-%m-%d ')
+                date = datetime.strptime(date, '%Y %m %d').strftime('%Y %m %d')
                 break
             except ValueError:
                 prompt = 'Invalid date. Try again [y/n]: '
@@ -247,7 +341,7 @@ class Manager:
         file_extension = '.md'
         filename_delim = '-'
 
-        filename = date + title.lower()
+        filename = date + filename_delim + title.lower()
         filename = filename_delim.join(filename.strip().split()) + file_extension
         filepath = os.path.join(self.posts_path, filename)
 
@@ -256,8 +350,6 @@ class Manager:
                 metadata = {
                     "title" : title,
                     "date" : date,
-                    "categories" : f'[{",".join([c for c in categories])}]',
-                    "tags" : f'[{",".join([t for t in tags])}]'
                 }
                 header = '\n'.join([YAML_DELIMITER, yaml.dump(metadata).strip(), YAML_DELIMITER])
                 new_post.write(header)

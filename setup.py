@@ -2,8 +2,6 @@
 
 from setuptools import setup
 
-import os
-
 README = open('README.md', 'r').read()
 DEPENDENCIES = open('requirements.txt', 'r').read().split('\n')
 
@@ -15,8 +13,7 @@ setup(
     author="Kludron",
     author_email="kludron@lukewarmsecurityinfo.com",
     url="https://github.com/kludron/jekyll-manager",
-    packages=['jekyll_manager'],
-    version='1.0.2',
+    version='1.1.0',
     install_requires=DEPENDENCIES,
     entry_points={'console_scripts': ['jekyll-manager=jekyll_manager.__main__:main']}
 )
