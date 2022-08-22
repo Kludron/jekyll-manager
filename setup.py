@@ -13,7 +13,7 @@ setup(
     author="Kludron",
     author_email="kludron@lukewarmsecurityinfo.com",
     url="https://github.com/kludron/jekyll-manager",
-    version='1.1.0',
+    version='1.2.0',
     install_requires=DEPENDENCIES,
     entry_points={'console_scripts': ['jekyll-manager=jekyll_manager.__main__:main']}
 )
