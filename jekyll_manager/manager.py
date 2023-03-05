@@ -23,9 +23,13 @@ COUNTER_START = 1
 
 class Manager:
 
-    def __init__(self, root) -> None:
+    def __init__(self, root, output=sys.stdout, altinput=sys.stdin) -> None:
         self.root = root
         self.posts = list()
+        
+        # Change input and output (for interface)
+        self.output = output
+        sys.stdin = altinput
 
         try:
             # This should always be correct, as per the documentation: https://jekyllrb.com/docs/posts/
@@ -102,7 +106,7 @@ class Manager:
                 self.parseSelection(input(prompt))
             except (KeyboardInterrupt, EOFError):
                 # Print a newline so it looks nice(r)
-                print()
+                print(file=self.output)
                 break
 
     def regeneratePosts(self) -> None:
@@ -123,9 +127,9 @@ class Manager:
         optSize  = padding + max([len(makeBright(makeRed(key))) for key in self.functions.keys()])
         # Get maximum description size
         descSize = padding + max([len(item.get("Description")) for item in self.functions.values()])
-        print(descSize)
-        print(optSize)
-        print(len(makeBlue(makeBright("Description"))))
+        print(descSize, file=self.output)
+        print(optSize, file=self.output)
+        print(len(makeBlue(makeBright("Description"))), file=self.output)
         # Set some variables
         listprefix  = '| + '
         listpostfix = ' |'
@@ -143,9 +147,9 @@ class Manager:
         seperator = '-' * (len(header) - len(makeBright(makeBlue(''))))
 
         # Print header of table
-        print(header)
+        print(header, file=self.output)
         # Print seperator
-        print(seperator)
+        print(seperator, file=self.output)
 
         for key in self.functions.keys():
             row  = listprefix.ljust(offset)
@@ -154,9 +158,9 @@ class Manager:
             row += self.functions.get(key)["Description"].ljust(descSize)
             row += listpostfix
             # Print row
-            print(row)
+            print(row, file=self.output)
         # Print end of table seperator 
-        print(seperator)
+        print(seperator, file=self.output)
 
     def parseSelection(self, selection) -> None:
         """
@@ -192,7 +196,7 @@ class Manager:
                 possibilities.append(fkey)
                 
         if len(possibilities) != 1:
-            print("Invalid option. Type 'menu' for a list of options.")
+            print("Invalid option. Type 'menu' for a list of options.", file=self.output)
             return
 
         menu_item = self.functions.get(possibilities[0])
@@ -226,7 +230,7 @@ class Manager:
         for post in self.posts:
             post.display()
 
-    def infoPosts(self, args:list) -> None:
+    def infoPosts(self, args:(list or bool)=True) -> None:
         # Check if user put in post number in command-line argument
         if not args:
             # Prompt for post number to edit
@@ -240,9 +244,9 @@ class Manager:
         if post:
             post.printInfo()
         else:
-            print('Invalid post number')
+            print('Invalid post number', file=self.output)
 
-    def editPosts(self, args:list) -> None:
+    def editPosts(self, args:(list or bool)=True) -> None:
         # Check if user put in post number in command-line argument
         if not args:
             # Prompt for post number to edit
@@ -256,9 +260,9 @@ class Manager:
         if post:
             post.edit()
         else:
-            print('Invalid post number')
+            print('Invalid post number', file=self.output)
 
-    def viewPosts(self, args:list) -> None:
+    def viewPosts(self, args:(list or bool)=True) -> None:
         # Check if user put in post number in command-line argument
         if not args:
             # Prompt for post number to edit
@@ -272,9 +276,9 @@ class Manager:
         if post:
             post.view()
         else:
-            print('Invalid post number')
+            print('Invalid post number', file=self.output)
     
-    def deletePosts(self, args:list) -> None:
+    def deletePosts(self, args:(list or bool)=True) -> None:
         # Check if user put in post number in command-line argument
         if not args:
             # Prompt for post number to edit
@@ -288,17 +292,17 @@ class Manager:
             if not post:
                 pass
             title = post.getTitle()
-            print(f"To verify, please type '{title.upper()}'")
+            print(f"To verify, please type '{title.upper()}'", file=self.output)
             confirmation = input('confirmation: ')
             if confirmation != title.upper():
-                print('Verificaiton failed. Not deleting...')
+                print('Verificaiton failed. Not deleting...', file=self.output)
             else:
-                print('Verification successful. Deleting post...')
+                print('Verification successful. Deleting post...', file=self.output)
                 if not post.delete():
-                    print('An error occured while deleting')
+                    print('An error occured while deleting', file=self.output)
             self.regeneratePosts()
         except (IndexError, ValueError):
-            print('Invalid post number.')
+            print('Invalid post number.', file=self.output)
 
     def createPosts(self) -> None:
         # TODO: How do I add more items that they can add in the creation
@@ -317,7 +321,7 @@ class Manager:
         # Check if that title already exists
         for post in self.posts:
             if post.getTitle().lower() == title.lower():
-                print('This post already exists.')
+                print('This post already exists.', file=self.output)
                 isEdit = input('Would you like to edit the post [Y/N]: ')
                 if isEdit.lower() == 'y':
                     post.edit()
@@ -326,7 +330,7 @@ class Manager:
         while True:
             try:
                 # Grab the date for the post
-                print('Date format: YYYY MM DD')
+                print('Date format: YYYY MM DD', file=self.output)
                 date = input('Post date: ')
                 date = datetime.strptime(date, '%Y %m %d').strftime('%Y %m %d')
                 break
@@ -358,5 +362,5 @@ class Manager:
             self.posts.append(post)
             self.regeneratePosts()
             post.edit()
-            print('Post created')
+            print('Post created', file=self.output)
 

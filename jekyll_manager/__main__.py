@@ -6,6 +6,7 @@ import logging
 
 from jekyll_manager.exceptions import JekyllRootException
 from jekyll_manager.manager import Manager
+from interface import Interface
 
 filename = os.path.basename(__file__)
 cliname = 'jekyll-manager'
@@ -44,5 +45,31 @@ def main():
     print(f'Opening jekyll blog @ {manager.root}')
     manager()
 
+def gui():
+    # Grab jekyll root directory
+    if len(sys.argv) < 2:
+        # Check if current directory is Jekyll Blog directory
+        try:
+            interface = Interface(os.path.abspath(os.getcwd()))
+        except JekyllRootException:
+            # Check if user has JEKYLL_ROOT in their environment variables
+            try:
+                root = os.getenv(env_variable)
+                interface = Interface(root)
+            except JekyllRootException as e:
+                logging.error(e)
+                print(usage)
+                sys.exit()
+    else:
+        try:
+            interface = Interface(sys.argv[1])
+        except JekyllRootException as e:
+            logging.error(e)
+            print(usage)
+            sys.exit()
+
+    print(f'Opening jekyll blog @ {interface.manager.root}')
+
+
 if __name__ == '__main__':
-    main()
+    gui()
